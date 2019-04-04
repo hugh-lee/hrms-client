@@ -11,7 +11,7 @@ import logo from '../assets/logo.svg';
 import getPageTitle from '@/utils/getPageTitle';
 
 const links = [
-  {
+  /*{
     key: 'help',
     title: formatMessage({ id: 'layout.user.link.help' }),
     href: '',
@@ -25,12 +25,12 @@ const links = [
     key: 'terms',
     title: formatMessage({ id: 'layout.user.link.terms' }),
     href: '',
-  },
+  },*/
 ];
 
 const copyright = (
   <Fragment>
-    Copyright <Icon type="copyright" /> 2018 蚂蚁金服体验技术部出品
+    Copyright <Icon type="copyright" /> 2019 仁远智慧科技有限公司出品
   </Fragment>
 );
 
@@ -63,10 +63,10 @@ class UserLayout extends Component {
               <div className={styles.header}>
                 <Link to="/">
                   <img alt="logo" className={styles.logo} src={logo} />
-                  <span className={styles.title}>Ant Design</span>
+                  <span className={styles.title}>人力资源管理系统</span>
                 </Link>
               </div>
-              <div className={styles.desc}>Ant Design 是西湖区最具影响力的 Web 设计规范</div>
+              <div className={styles.desc}></div>
             </div>
             {children}
           </div>

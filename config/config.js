@@ -114,4 +114,6 @@ export default {
   },
 
   chainWebpack: webpackPlugin,
+
+  history: 'hash', // 默认是 browser
 };
