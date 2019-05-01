@@ -49,9 +49,9 @@ export default {
   'app.settings.notification.password': 'Account Password',
   'app.settings.notification.password-description':
     'Messages from other users will be notified in the form of a station letter',
-  'app.settings.notification.messages': 'System Messages',
+  'app.settings.notification.messages': 'Manager Messages',
   'app.settings.notification.messages-description':
-    'System messages will be notified in the form of a station letter',
+    'Manager messages will be notified in the form of a station letter',
   'app.settings.notification.todo': 'To-do Notification',
   'app.settings.notification.todo-description':
     'The to-do list will be notified in the form of a letter from the station',

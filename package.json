@@ -59,6 +59,8 @@
     "enquire-js": "^0.2.1",
     "express": "^4.16.4",
     "gg-editor": "^2.0.2",
+    "js-base64": "^2.5.1",
+    "jsencrypt": "^3.0.0-rc.1",
     "lodash": "^4.17.11",
     "lodash-decorators": "^6.0.1",
     "memoize-one": "^5.0.0",
@@ -78,7 +80,7 @@
     "react-dom": "^16.7.0",
     "react-fittext": "^1.0.0",
     "react-media": "^1.9.2",
-    "umi": "^2.4.4",
+    "umi": "^2.6.16",
     "umi-plugin-react": "^1.7.2",
     "umi-request": "^1.0.5"
   },

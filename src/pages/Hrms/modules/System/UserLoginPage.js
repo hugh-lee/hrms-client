@@ -4,15 +4,16 @@ import { formatMessage, FormattedMessage, setLocale } from 'umi/locale';
 
 import { Alert, Icon } from 'antd';
 import Login from '@/components/Login';
-import styles from './UserLogin.less';
+import styles from './UserLoginPage.less';
 
 const { UserName, Password, Submit } = Login;
 
 setLocale('zh-CN');
 
-@connect(({ target, loading }) => ({
-  target,
-  submitting: loading.effects['target/login'],
+@connect(({ sysUser, sysCode, loading }) => ({
+  sysUser,
+  sysCode,
+  submitting: loading.models.sysUser || loading.models.sysCode,
 }))
 class LoginPage extends Component {
   state = {
@@ -20,17 +21,27 @@ class LoginPage extends Component {
     autoLogin: true,
   };
 
+  initialize = () => {
+    const { sysUser, dispatch } = this.props;
+    if (sysUser.loginStatus != 'error') {
+      dispatch({
+        type: 'sysCode/initialize',
+      });
+    }
+  };
+
   handleSubmit = (err, values) => {
     const { type } = this.state;
     if (!err) {
       const { dispatch } = this.props;
       dispatch({
-        type: 'target/login',
+        type: 'sysUser/login',
         payload: {
           ...values,
-          approach: 'web',
-          login_name: values['userName'],
+          force: false,
+          //approach: 'web',
         },
+        callback: this.initialize,
       });
     }
   };
@@ -42,11 +53,11 @@ class LoginPage extends Component {
   };
 
   renderMessage = content => (
-    <Alert style={{ marginBottom: 24 }} message={content} type="error" showIcon/>
+    <Alert style={{ marginBottom: 24 }} message={content} type="error" showIcon />
   );
 
   render() {
-    const { target, submitting } = this.props;
+    const { sysUser, submitting } = this.props;
     const { type, autoLogin } = this.state;
     return (
       <div className={styles.main}>
@@ -58,13 +69,13 @@ class LoginPage extends Component {
             this.loginForm = form;
           }}
         >
-          <div></div>
+          <div />
           <div key="account" tab={formatMessage({ id: 'app.login.tab-login-credentials' })}>
-            {target.loginStatus === 'error' &&
-            !submitting &&
-            this.renderMessage(formatMessage({ id: 'app.login.message-invalid-credentials' }))}
+            {sysUser.loginStatus === 'error' &&
+              !submitting &&
+              this.renderMessage(sysUser.loginMessage)}
             <UserName
-              name="userName"
+              name="userId"
               placeholder={`${formatMessage({ id: 'app.login.userName' })}: `}
               rules={[
                 {
@@ -86,13 +97,10 @@ class LoginPage extends Component {
             />
           </div>
 
-          <div>
-
-          </div>
+          <div />
           <Submit loading={submitting}>
-            <FormattedMessage id="app.login.login"/>
+            <FormattedMessage id="app.login.login" />
           </Submit>
-
         </Login>
       </div>
     );

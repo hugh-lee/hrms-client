@@ -11,18 +11,19 @@ export default [
       {
         path: '/user/login',
         name: 'login',
-        component: './Hrms/modules/System/UserLogin',
+        component: './Hrms/modules/System/UserLoginPage',
+        //component: './Manager/Login',
       },
-      {
-        path: '/user/register',
-        name: 'register',
-        component: './User/Register',
-      },
-      {
-        path: '/user/register-result',
-        name: 'register.result',
-        component: './User/RegisterResult',
-      },
+      // {
+      //   path: '/user/register',
+      //   name: 'register',
+      //   component: './Manager/Register',
+      // },
+      // {
+      //   path: '/user/register-result',
+      //   name: 'register.result',
+      //   component: './Manager/RegisterResult',
+      // },
       {
         component: '404',
       },
