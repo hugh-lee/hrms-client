@@ -138,7 +138,7 @@ class BasicLayout extends React.Component {
           <Content className={styles.content} style={contentStyle}>
             {children}
           </Content>
-          <Footer />
+          {/*<Footer />*/}
         </Layout>
       </Layout>
     );
@@ -148,7 +148,9 @@ class BasicLayout extends React.Component {
           <ContainerQuery query={query}>
             {params => (
               <Context.Provider value={this.getContext()}>
-                <div className={classNames(params)}>{layout}</div>
+                <div className={classNames(params)} style={{ overflow: 'hidden' }}>
+                  {layout}
+                </div>
               </Context.Provider>
             )}
           </ContainerQuery>
