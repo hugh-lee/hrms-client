@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { connect } from 'dva';
 import { formatMessage, FormattedMessage, setLocale } from 'umi/locale';
 
-import { Alert, Icon } from 'antd';
+import { Modal, Alert, Icon } from 'antd';
 import Login from '@/components/Login';
 import styles from './UserLoginPage.less';
 
@@ -21,28 +21,49 @@ class LoginPage extends Component {
     autoLogin: true,
   };
 
-  initialize = () => {
+  getAllCode = () => {
     const { sysUser, dispatch } = this.props;
     if (sysUser.loginStatus != 'error') {
       dispatch({
-        type: 'sysCode/initialize',
+        type: 'sysCode/getAllCode',
       });
     }
   };
 
-  handleSubmit = (err, values) => {
+  forceLogin = () => {
+    Modal.confirm({
+      title: '用户在线确认',
+      content: '用户已经在线，请问是否重新登录？',
+      okText: '确认',
+      cancelText: '取消',
+      onOk: () => {
+        this.loginForm.validateFields((err, fieldsValue) => {
+          this.login(fieldsValue, true);
+        });
+      },
+      onCancel: () => {},
+    });
+  };
+
+  login = (fieldsValue, force) => {
+    const { dispatch } = this.props;
+    dispatch({
+      type: 'sysUser/login',
+      payload: {
+        ...fieldsValue,
+        force: force,
+      },
+      callback: {
+        getAllCode: this.getAllCode,
+        forceLogin: this.forceLogin,
+      },
+    });
+  };
+
+  handleSubmit = (err, fieldsValue) => {
     const { type } = this.state;
     if (!err) {
-      const { dispatch } = this.props;
-      dispatch({
-        type: 'sysUser/login',
-        payload: {
-          ...values,
-          force: false,
-          //approach: 'web',
-        },
-        callback: this.initialize,
-      });
+      this.login(fieldsValue, false);
     }
   };
 

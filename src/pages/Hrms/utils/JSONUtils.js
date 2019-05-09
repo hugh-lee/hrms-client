@@ -4,3 +4,8 @@ export const getValue = (actions, action) => {
   }
   return null;
 };
+
+export const getValueString = obj =>
+  Object.keys(obj)
+    .map(key => obj[key])
+    .join(',');

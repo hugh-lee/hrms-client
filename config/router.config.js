@@ -34,14 +34,20 @@ export default [
     path: '/',
     component: '../layouts/BasicLayout',
     Routes: ['src/pages/Authorized'],
+    authority: ['admin', 'user', 'guest'],
     routes: [
       // dashboard
-      { path: '/', redirect: '/dashboard/analysis', authority: ['admin', 'user'] },
+      { path: '/', redirect: '/staff/StaffBuild' },
       {
-        path: '/dashboard',
-        name: 'dashboard',
+        path: '/staff',
+        name: '计划与调配 ',
         icon: 'dashboard',
         routes: [
+          {
+            path: '/staff/staffBuild',
+            name: '人员建档',
+            component: './Hrms/modules/Staff/StaffBuildPage',
+          },
           {
             path: '/dashboard/analysis',
             name: 'analysis',

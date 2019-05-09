@@ -8,6 +8,7 @@ export const sendRequest = (action, params) => {
   sdo.header.action = action;
   sdo.header.token = localStorage.getItem('token');
   sdo.header.requestTime = new Date().getTime();
+  sdo.header.user = 'cskzxxx';
   sdo.body = params || {};
 
   let formData = new FormData();

@@ -1,4 +1,8 @@
+import { setAuthority } from '@/utils/authority';
+import { reloadAuthorized } from '@/utils/Authorized';
+
 import * as SysUserService from '@/pages/Hrms/services/System/SysUserService';
+import * as OrgUserService from '@/pages/Hrms/services/Org/OrgService';
 import * as CryptoUtils from '@/pages/Hrms/utils/CryptoUtils';
 
 export default {
@@ -7,8 +11,10 @@ export default {
   state: {
     loginStatus: undefined,
     loginMessage: undefined,
-    context: {},
-    currentUser: {},
+    context: {
+      user: {},
+      org: {},
+    },
   },
 
   effects: {
@@ -22,12 +28,40 @@ export default {
       payload.publickey = yield select(state => state.sysUser.context.RSAPublicKey);
 
       response = yield call(SysUserService.login, payload);
+      if (response.body.status == 'online') {
+        callback.forceLogin();
+        return;
+      }
+
       yield put({
         type: SysUserService.getActionName(response),
         payload: response,
       });
 
-      if (callback) callback();
+      let loginStatus = yield select(state => state.sysUser.loginStatus);
+      if (loginStatus == 'ok') {
+        if (callback) callback.getAllCode();
+
+        setAuthority('admin');
+        reloadAuthorized();
+
+        const urlParams = new URL(window.location.href);
+        const params = getPageQuery();
+        let { redirect } = params;
+        if (redirect) {
+          const redirectUrlParams = new URL(redirect);
+          if (redirectUrlParams.origin === urlParams.origin) {
+            redirect = redirect.substr(urlParams.origin.length);
+            if (redirect.match(/^\/.*#/)) {
+              redirect = redirect.substr(redirect.indexOf('#') + 1);
+            }
+          } else {
+            window.location.href = redirect;
+            return;
+          }
+        }
+        yield put(routerRedux.replace(redirect || '/'));
+      }
     },
 
     *logout({ payload }, { call, put }) {
@@ -48,8 +82,6 @@ export default {
     },
 
     ACTION_USER_LOGIN(state, { payload }) {
-      if (payload == undefined || payload.header == undefined) return state;
-
       let loginStatus =
         payload.status == undefined || payload.status.code == '0000' ? 'ok' : 'error';
       let loginMessage = payload.status != undefined ? payload.status.text : '';
@@ -57,126 +89,18 @@ export default {
       if (payload && payload.body && payload.body.user)
         localStorage.setItem('token', payload.body.user.token);
 
-      if (payload.body.status == 'online') {
-        Modal.confirm({
-          title: '用户在线确认',
-          content: '用户已经在线，请问是否重新登录？',
-          okText: '确认',
-          cancelText: '取消',
-        });
-
-        //   DialogResult result = MessageBox.Show("用户已经在线，请问是否重新登录？", "用户在线确认", MessageBoxButtons.OKCancel);
-        //   if (result == DialogResult.OK)
-        //   {
-        //     Login(true, false);
-        //   }
-        //   else
-        //   {
-        //     this.UserText.Focus();
-        //   }
-        // }
-        // else if (payload.body.status  == "replaceUkey")
-        // {
-        //   Cursor.Current = Cursors.Default;
-        //   DialogResult result = MessageBox.Show("用户已经绑定到一个加密锁，是否替换加密锁？如果替换，原绑定加密锁将不能在使用。", "确认", MessageBoxButtons.OKCancel);
-        //   if (result == DialogResult.OK)
-        //   {
-        //     Login(false, true);
-        //   }
-        //   else
-        //   {
-        //     this.UserText.Focus();
-        //   }
-        // }
-        // else if (payload.body.status  == "success")
-        // {
-        //   HrmsContext.IsLogin = true;
-        //   UserService.InitializeData();
-        //   HrmsContext.InitData(e.Body);
-        //   SysSnInfoContext.InitData(e.Body);
-        //
-        //   this.ShowMainForm();
+      if (payload.body.user.personnelPermission) {
+        if (payload.body.org.permission == OrgService.OrgPermission.PERMISSION_PERSONNEL_UNIT)
+          payload.body.user.isPersonnel = true;
+        else if (payload.body.org.permission == OrgService.OrgPermission.PERMISSION_ORG_UNIT)
+          payload.body.user.isZZB = true;
       }
+
       return {
         ...state,
         loginStatus: loginStatus,
         loginMessage: loginMessage,
-        currentUser: payload.body,
-      };
-    },
-    handleResponse(state, { payload }) {
-      if (payload == undefined || payload.header == undefined) return state;
-
-      //
-      if (payload.header.action == SysUserService.ACTION_GET_CODE) {
-        if (payload && payload.body)
-          state.context.RSAPublicKey = CryptoUtils.decodeBase64(payload.body.code);
-      }
-
-      //
-      if (payload.header.action == SysUserService.ACTION_USER_LOGIN) {
-        let loginStatus =
-          payload.status == undefined || payload.status.code == '0000' ? 'ok' : 'error';
-        let loginMessage = payload.status != undefined ? payload.status.text : '';
-
-        if (payload && payload.body && payload.body.user)
-          localStorage.setItem('token', payload.body.user.token);
-
-        if (payload.body.status == 'online') {
-          Modal.confirm({
-            title: '用户在线确认',
-            content: '用户已经在线，请问是否重新登录？',
-            okText: '确认',
-            cancelText: '取消',
-          });
-
-          //   DialogResult result = MessageBox.Show("用户已经在线，请问是否重新登录？", "用户在线确认", MessageBoxButtons.OKCancel);
-          //   if (result == DialogResult.OK)
-          //   {
-          //     Login(true, false);
-          //   }
-          //   else
-          //   {
-          //     this.UserText.Focus();
-          //   }
-          // }
-          // else if (payload.body.status  == "replaceUkey")
-          // {
-          //   Cursor.Current = Cursors.Default;
-          //   DialogResult result = MessageBox.Show("用户已经绑定到一个加密锁，是否替换加密锁？如果替换，原绑定加密锁将不能在使用。", "确认", MessageBoxButtons.OKCancel);
-          //   if (result == DialogResult.OK)
-          //   {
-          //     Login(false, true);
-          //   }
-          //   else
-          //   {
-          //     this.UserText.Focus();
-          //   }
-          // }
-          // else if (payload.body.status  == "success")
-          // {
-          //   HrmsContext.IsLogin = true;
-          //   UserService.InitializeData();
-          //   HrmsContext.InitData(e.Body);
-          //   SysSnInfoContext.InitData(e.Body);
-          //
-          //   this.ShowMainForm();
-        }
-        return {
-          ...state,
-          loginStatus: loginStatus,
-          loginMessage: loginMessage,
-          currentUser: payload.body,
-        };
-      }
-
-      return state;
-    },
-
-    system_sysUser_login(state, action) {
-      return {
-        ...state,
-        list: action.payload,
+        context: payload.body,
       };
     },
 

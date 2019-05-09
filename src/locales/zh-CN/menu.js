@@ -1,4 +1,6 @@
 export default {
+  'menu.计划与调配 ': '计划与调配',
+  'menu.计划与调配.人员建档 ': '人员建档',
   'menu.home': '首页',
   'menu.login': '登录',
   'menu.register': '注册',

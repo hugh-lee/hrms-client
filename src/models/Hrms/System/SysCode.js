@@ -9,22 +9,18 @@ export default {
   },
 
   effects: {
-    *initialize(_, { call, put }) {
+    *getAllCode(_, { call, put }) {
       let response = yield call(SysCodeService.getAllCodes);
       yield put({
-        type: 'handleResponse',
+        type: SysUserService.getActionName(response),
         payload: response,
       });
     },
   },
 
   reducers: {
-    handleResponse(state, { payload }) {
-      if (payload.header.action == SysCodeService.ACTION_GET_ALL_CODE_VALUES) {
-        state.codes = payload.body.entrys;
-      }
-
-      return state;
+    ACTION_GET_ALL_CODE_VALUES(state, { payload }) {
+      return { ...state, codes: payload.body.entrys };
     },
   },
 };

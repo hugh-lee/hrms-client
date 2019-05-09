@@ -35,13 +35,6 @@ export default {
 
   reducers: {
     handleResponse(state, { payload }) {
-      if (payload.header.action == sysUserService.ACTION_GET_CODE) {
-        state.context.RSAPublicKey = e.Body['code'] + '';
-      }
-
-      if (payload.header.action == sysUserService.ACTION_USER_LOGIN) {
-      }
-
       return state;
     },
   },

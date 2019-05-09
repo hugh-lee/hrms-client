@@ -1,4 +1,4 @@
-import * as sysUserService from '@/pages/Hrms/services/System/SysUserService';
+import * as SysUserService from '@/pages/Hrms/services/System/SysUserService';
 
 export default {
   namespace: 'workflow',
@@ -10,14 +10,14 @@ export default {
 
   effects: {
     *login({ payload }, { call, put }) {
-      let response = yield call(sysUserService.getCode, payload);
+      let response = yield call(SysUserService.getCode, payload);
       yield put({
         type: 'handleResponse',
         payload: response,
       });
 
       payload.publickey = '';
-      response = yield call(sysUserService.login, payload);
+      response = yield call(SysUserService.login, payload);
       yield put({
         type: 'handleResponse',
         payload: response,
@@ -35,13 +35,6 @@ export default {
 
   reducers: {
     handleResponse(state, { payload }) {
-      if (payload.header.action == sysUserService.ACTION_GET_CODE) {
-        state.context.RSAPublicKey = e.Body['code'] + '';
-      }
-
-      if (payload.header.action == sysUserService.ACTION_USER_LOGIN) {
-      }
-
       return state;
     },
   },

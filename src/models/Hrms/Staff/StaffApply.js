@@ -1,25 +1,23 @@
-import * as sysUserService from '@/pages/Hrms/services/System/SysUserService';
+import * as StaffService from '@/pages/Hrms/services/Staff/StaffService';
 
 export default {
   namespace: 'staffApply',
 
   state: {
-    context: {},
-    currentUser: {},
+    entrys: [],
+    pagination: {},
   },
 
   effects: {
-    *login({ payload }, { call, put }) {
-      let response = yield call(sysUserService.getCode, payload);
-      yield put({
-        type: 'handleResponse',
-        payload: response,
-      });
+    *getStaffs({ payload }, { call, put }) {
+      let { currentPage, pageSize } = this.payload;
+      if (!currentPage) this.payload.currentPage = 1;
 
-      payload.publickey = '';
-      response = yield call(sysUserService.login, payload);
+      if (!pageSize) this.payload.pageSize = 20;
+
+      let response = yield call(StaffService.getStaffs, payload);
       yield put({
-        type: 'handleResponse',
+        type: StaffService.getActionName(response),
         payload: response,
       });
     },
@@ -34,15 +32,15 @@ export default {
   },
 
   reducers: {
-    handleResponse(state, { payload }) {
-      if (payload.header.action == sysUserService.ACTION_GET_CODE) {
-        state.context.RSAPublicKey = e.Body['code'] + '';
-      }
+    ACTION_GET_STAFFS(state, { payload }) {
+      const entrys = payload.body.entrys;
+      const pagination = {
+        total: payload.body.entryCount,
+        pageSize: payload.body.pageSize,
+        current: payload.body.pageNo,
+      };
 
-      if (payload.header.action == sysUserService.ACTION_USER_LOGIN) {
-      }
-
-      return state;
+      return { ...state, entrys, pagination };
     },
   },
 };
